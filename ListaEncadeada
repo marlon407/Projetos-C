@@ -1,0 +1,184 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+// Definição dos tipos 'itemDaLista' e 'listaEncadeada'
+typedef struct item {
+    int codigo;
+    char* nome;
+    int idade;
+    struct item *pProx;
+    struct item *pAnt;
+} itemDaLista;
+
+typedef struct lista{
+    itemDaLista *inicio;
+    int tamanho;
+    itemDaLista *fim
+} listaEncadeada;
+
+// Prototipação das funções
+void inicializacao (listaEncadeada*);
+int inserirPrimeiro(listaEncadeada*, int, char* , int);
+void percorrerLista(listaEncadeada*);
+
+
+// Desenvolvimento das funções
+
+// Inicializa um lista vazia.
+void inicializacao (listaEncadeada *lista){
+    lista->inicio = NULL;
+    lista->fim = NULL;
+    lista->tamanho = 0;
+}
+
+int inserirPrimeiro(listaEncadeada* lista, int cod, char* nome, int idade)
+{
+	itemDaLista* novoItem;
+	novoItem = (itemDaLista* ) malloc (sizeof (itemDaLista));
+	if (novoItem == NULL) {
+	return -1;
+	}
+	novoItem->codigo = cod;
+	novoItem->nome = (char*) malloc (50 * sizeof (char));
+	strcpy(novoItem->nome, nome);
+	novoItem->idade = idade;
+	novoItem->pProx = lista->inicio;
+	lista->inicio = novoItem;
+	if (lista->inicio->pProx != NULL)
+		lista->inicio->pProx->pAnt = novoItem;
+	else{
+		lista->fim = novoItem;
+	}
+	lista->tamanho++;
+	return 0;
+}
+
+int removerUltimo(listaEncadeada* lista)
+{
+    if (lista->inicio == NULL)
+        return -1;
+    else if(lista->inicio->pProx == NULL)
+    {
+        lista->inicio = NULL;
+        lista->fim = NULL;
+        return 0;
+    }
+    else
+    {
+        itemDaLista* noAtual = lista->inicio;
+        while (noAtual->pProx->pProx != NULL)
+            noAtual = noAtual->pProx;
+        noAtual->pProx = NULL;
+        lista->fim = noAtual;
+        free(noAtual->pProx);
+        lista->tamanho--;
+        return 0;
+    }
+}
+
+int inserir(listaEncadeada* lista, int cod, char* nome, int idade)
+{
+    itemDaLista* novoItem;
+    novoItem = (itemDaLista*) malloc (sizeof (itemDaLista));
+    if (novoItem == NULL)
+    {
+        printf("Não foi possível alocar espaço de memória\n");
+        return -1;
+    }
+    novoItem->codigo = cod;
+    novoItem->nome = (char* ) malloc (50 * sizeof(char));
+    strcpy(novoItem->nome,nome);
+    novoItem->idade = idade;
+
+    if(lista->inicio == NULL || lista->inicio->codigo > novoItem->codigo)
+        inserirPrimeiro(lista, novoItem->codigo, novoItem->nome, novoItem->idade);
+    else
+    {
+        itemDaLista* noAtual = lista->inicio;
+
+        while (noAtual->pProx != NULL && noAtual->pProx->codigo < novoItem->codigo)
+			noAtual = noAtual->pProx;
+		if(novoItem->codigo > lista->fim->codigo){
+			lista->fim = novoItem;
+		}
+		novoItem->pAnt = noAtual;
+        novoItem->pProx = noAtual->pProx;
+        noAtual->pProx = novoItem;
+        lista->tamanho++;
+    }
+    return 0;
+}
+
+int remover(listaEncadeada* lista, int cod)
+{
+    itemDaLista* noAtual = lista->inicio;
+    while (noAtual->pProx->codigo != cod)
+         noAtual = noAtual->pProx;
+
+    itemDaLista* noRemoved = noAtual->pProx;
+    if(noRemoved->pProx != NULL){
+    noAtual->pProx = noRemoved->pProx;
+    noAtual->pProx->pAnt = noAtual;
+	}
+	else{
+		noAtual->pProx = NULL;
+		lista->fim = noAtual;
+	}
+    free(noRemoved);
+    lista->tamanho--;
+    return 0;
+}
+
+void emptyLista(listaEncadeada* lista)
+{
+    while(lista->inicio != NULL)
+        removerUltimo(lista);
+}
+
+void percorrerLista(listaEncadeada* lista){
+    if (lista->inicio == NULL) {
+        printf("Lista vazia!\n");
+    } else {
+        printf ("---- Elementos da Lista ----- \n");
+        itemDaLista* noAtual = lista->inicio;
+        while (noAtual != NULL) {
+            printf("Elemento %d - Nome %s - Idade %d\n", noAtual->codigo, noAtual->nome, noAtual->idade);
+            noAtual = noAtual->pProx;
+        }
+        printf ("---- Fim da Lista ----- \n");
+    }
+}
+
+void percorrerListaInversamente(listaEncadeada* lista){
+    if (lista->inicio == NULL) {
+        printf("Lista vazia!\n");
+    } else {
+        printf ("---- Elementos da Lista Inversos----- \n");
+        itemDaLista* noAtual = lista->fim;
+        while (noAtual != NULL) {
+            printf("Elemento %d - Nome %s - Idade %d\n", noAtual->codigo, noAtual->nome, noAtual->idade);
+            noAtual = noAtual->pAnt;
+        }
+        printf ("---- Fim da Lista ----- \n");
+    }
+}
+
+int main(){
+    listaEncadeada *minhaPrimeiraLista;
+    minhaPrimeiraLista = (listaEncadeada*) malloc (sizeof (listaEncadeada));
+    if (minhaPrimeiraLista == NULL) {
+        printf("Não foi possível alocar memória\n");
+        return -1;
+    }
+    inicializacao(minhaPrimeiraLista);
+    percorrerLista(minhaPrimeiraLista);
+    inserir(minhaPrimeiraLista, 10, "Eduardo", 20);
+    inserir(minhaPrimeiraLista, 15, "Marcio", 20);
+    inserir(minhaPrimeiraLista, 25, "Cesar", 20);
+    inserir(minhaPrimeiraLista, 7, "Leo", 20);
+    percorrerLista(minhaPrimeiraLista);
+    remover(minhaPrimeiraLista,25);
+	percorrerListaInversamente(minhaPrimeiraLista);
+    return 0;
+}
