@@ -58,23 +58,35 @@
 					if(atualItem->pMaior == NULL)
 					{
 						atualItem->pMaior = atualItem;
+						atualItem->pMaior->pMaior  = NULL;
+						atualItem->pMaior->pMenor  = NULL; 
 						break;
 					}			
 					atualItem = atualItem->pMaior;
 				}
+				if(atualItem->codigo > novoItem->codigo)
+			{
+					atualItem->pMenor = novoItem;
+			}
 		}
 		else{
-			atualItem = arvore->root;
-			
+			atualItem = arvore->root;			
 			while(atualItem->codigo > novoItem->codigo)
 				{
 					if(atualItem->pMenor == NULL)
 					{
-						atualItem->pMenor = atualItem;
+						atualItem->pMenor = novoItem;
+						atualItem->pMenor->pMaior  = NULL;
+						atualItem->pMenor->pMenor  = NULL; 						
 						break;
-					}			
+					} 
 					atualItem = atualItem->pMenor;
 				}
+			if(atualItem->codigo < novoItem->codigo)
+			{
+					atualItem->pMaior = novoItem;
+			}
+			
 		}
 		arvore->tamanho++;
 		return 0;
@@ -84,14 +96,12 @@
 	{
 		itemDaArvore* noAtual;
 		noAtual = arvore->root;
-		printf("%d",noAtual->codigo);
 		while(noAtual->pMenor != NULL)
 		{
-			printf("%d", noAtual->codigo);
+			
+			printf("%d,", noAtual->codigo);
 			noAtual = noAtual->pMenor;
 		}
-		printf("%d", noAtual->codigo);
-			
 	}
 
 	int main(){
@@ -103,7 +113,12 @@
 		}
 		inicializacao(minhaArvore);
 		inserirRaiz(minhaArvore, 28);
+		inserir(minhaArvore, 26);
 		inserir(minhaArvore, 27);
+		inserir(minhaArvore, 25);
+		inserir(minhaArvore, 24);
+		inserir(minhaArvore, 23);		
+		inserir(minhaArvore, 22);
 		percorrer(minhaArvore);
 		return 0;
 	}
