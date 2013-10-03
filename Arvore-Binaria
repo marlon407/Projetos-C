@@ -1,0 +1,109 @@
+	#include <stdio.h>
+	#include <stdlib.h>
+	#include <string.h>
+
+	// Definição dos tipos 'itemDaLista' e 'listaEncadeada'
+	typedef struct item {
+		int codigo;
+		struct item *pMaior;
+		struct item *pMenor;
+	} itemDaArvore;
+
+	typedef struct arvore{
+		itemDaArvore *root;
+		int tamanho;
+	} arvoreBinaria;
+
+	// Prototipação das funções
+	void inicializacao (arvoreBinaria*);
+
+
+	// Desenvolvimento das funções
+
+	// Inicializa um lista vazia.
+	void inicializacao (arvoreBinaria *arvore){
+		arvore->root = NULL;
+		arvore->tamanho = 0;
+	}
+
+	int inserirRaiz(arvoreBinaria* arvore,int codigo)
+	{
+		itemDaArvore* novoItem;	
+		novoItem = (itemDaArvore* ) malloc (sizeof (itemDaArvore));
+		if (novoItem == NULL) {
+			return -1;
+		}
+		novoItem->codigo = codigo;
+		arvore->root = novoItem;
+		arvore->root->pMaior = NULL;
+		arvore->root->pMenor = NULL;
+		arvore->tamanho++;
+		return 0;
+	}
+
+	int inserir(arvoreBinaria* arvore, int codigo)
+	{
+		itemDaArvore* novoItem;	
+		itemDaArvore* atualItem;	
+		novoItem = (itemDaArvore* ) malloc (sizeof (itemDaArvore));
+		if (novoItem == NULL) {
+			return -1;
+		}
+		novoItem->codigo = codigo;
+		
+		if(novoItem->codigo > arvore->root->codigo){
+			atualItem = arvore->root->pMaior;
+			while(atualItem->codigo < novoItem->codigo)
+				{
+					if(atualItem->pMaior == NULL)
+					{
+						atualItem->pMaior = atualItem;
+						break;
+					}			
+					atualItem = atualItem->pMaior;
+				}
+		}
+		else{
+			atualItem = arvore->root;
+			
+			while(atualItem->codigo > novoItem->codigo)
+				{
+					if(atualItem->pMenor == NULL)
+					{
+						atualItem->pMenor = atualItem;
+						break;
+					}			
+					atualItem = atualItem->pMenor;
+				}
+		}
+		arvore->tamanho++;
+		return 0;
+	}
+
+	void percorrer(arvoreBinaria* arvore)
+	{
+		itemDaArvore* noAtual;
+		noAtual = arvore->root;
+		printf("%d",noAtual->codigo);
+		while(noAtual->pMenor != NULL)
+		{
+			printf("%d", noAtual->codigo);
+			noAtual = noAtual->pMenor;
+		}
+		printf("%d", noAtual->codigo);
+			
+	}
+
+	int main(){
+		arvoreBinaria *minhaArvore;
+		minhaArvore = (arvoreBinaria*) malloc (sizeof (arvoreBinaria));
+		if (minhaArvore == NULL) {
+			printf("Não foi possível alocar memória\n");
+			return -1;
+		}
+		inicializacao(minhaArvore);
+		inserirRaiz(minhaArvore, 28);
+		inserir(minhaArvore, 27);
+		percorrer(minhaArvore);
+		return 0;
+	}
